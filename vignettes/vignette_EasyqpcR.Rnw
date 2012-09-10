@@ -1,0 +1,391 @@
+%\VignetteIndexEntry{EasyqpcR}
+%\VignetteDepends{plyr,matrixStats,plotrix}
+%\VignetteKeywords{real-time, quantitative, PCR, qPCR}
+%\VignettePackage{EasyqpcR}
+%
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}\usepackage{color}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.75}
+\usepackage{listings}
+\usepackage{inconsolata}
+\usepackage[%
+baseurl={http://irtomit.labo.univ-poitiers.fr/},%
+pdftitle={EasyqpcR: low-throughput real-time quantitative PCR data analysis},%
+pdfauthor={Sylvain Le Pape},%
+pdfsubject={EasyqpcR},%
+pdfkeywords={real-time, quantitative, PCR, qPCR},%
+pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
+pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
+%
+\markboth{\sl Package ``{\tt EasyqpcR}''}{\sl Package ``{\tt EasyqpcR}''}
+%
+% -------------------------------------------------------------------------------
+\newcommand{\code}[1]{{\tt #1}}
+\newcommand{\pkg}[1]{{\tt "#1"}}
+% -------------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------------
+\begin{document}
+
+%-------------------------------------------------------------------------------
+\title{EasyqpcR: low-throughput real-time quantitative PCR data analysis}
+%-------------------------------------------------------------------------------
+\author{Sylvain Le Pape\\ 
+IRTOMIT-INSERM U1082 (Poitiers, France)\medskip\\
+\includegraphics[width = 3cm]{logoirtomit.jpg}
+}
+\maketitle
+\tableofcontents
+%-------------------------------------------------------------------------------
+\newpage 
+\section{Introduction}
+%-------------------------------------------------------------------------------
+The package \pkg{EasyqpcR} has been created to facilitate the analysis of 
+ real-time quantitative RT-PCR data. This package contains five functions 
+ (\code{badCt, nrmData, calData, totData, slope}). In this manuscript, we 
+ describe and demonstrate how we can use this package. The last section presents
+ how we can use the free R GUI \code{RStudio} and the \code{gWidgets} package 
+ created by John Verzani in order to facilitate the qPCR data analysis by a 
+ graphical user interface.
+
+%-------------------------------------------------------------------------------
+\newpage 
+\section{Amplification efficiency calculation} 
+%-------------------------------------------------------------------------------
+In this section, we describe how we can use the \code{slope} function of this 
+ package. As an example, we have 2 genes (gene 1 and gene 2) and 5 samples in 
+ triplicates (control group 1 and control group 2, treatment group 1 and 
+ treatment group 2, calibrator). We want to calculate the amplification 
+ efficiency of these two genes: 
+
+
+<<first, comment=NA>>=
+
+library(EasyqpcR)
+
+data(Efficiency_calculation)
+
+slope(data = Efficiency_calculation, q=c(1000, 100 ,10, 1, 0.1),
+    r=3, na.rm=TRUE)
+
+@
+
+You can put the returned values into a vector to use it (without the need to 
+ type every amplification efficiency) in the next functions.
+
+<<firstbis, comment=NA>>=
+
+efficiency <- slope(data = Efficiency_calculation, 
+		  q=c(1000, 100 ,10, 1, 0.1), r=3, na.rm=TRUE)
+
+@
+%-------------------------------------------------------------------------------
+\newpage 
+\section{Calculation of the expression values from one or multiple qPCR run(s)} 
+%-------------------------------------------------------------------------------
+We describe the calculation of the normalization factors, the relative 
+ quantities, the normalized relative quantities, and the normalized relative 
+ quantities scaled to the control group of your choice using the method of 
+ Hellemans et al (2007) \cite{qbase}. We have a set of three qPCR runs, each run 
+ representing an independent biological replicate. The raw data of these runs 
+ can be found in the \code{data} folder of this package. The no template control
+ and no amplification control have been discarded in order to facilitate the 
+ understanding of the workflow. The limiting step is that you need to put the
+ control samples on the top of the data frame otherwise, the algorithm will not
+ work correctly. Firstly, we load the datasets:
+
+<<EasyqpcR, comment=NA>>=
+data(qPCR_run1,qPCR_run2,qPCR_run3)
+
+str(c(qPCR_run1,qPCR_run2,qPCR_run3))
+@
+
+Each dataset contains 15 observations: 5 samples (2 control groups, 2 treatment
+ groups, 1 calibrator) in triplicates. There are 4 genes: 2 reference genes
+ (RG1 and RG2) and 2 target genes (TG and Tgb). 
+In order to facilitate the
+ understanding of the \code{nrmData} function, I suggest you to read its man 
+ page by typing \code{?nrmData} in your R session.
+
+Concerning the reference genes, I suggest you to use the \code{selectHKgenes}
+ function of the \code{SLqPCR} package from Matthias Kohl \cite{SLqPCR}.
+
+In order to avoid the inter-run variations, we have used a calibrator (one is
+ the minimum recommended, more is better). Thus, we have to calculate the
+ calibration factor for each gene. We have to include the normalized relative
+ quantities of our calibrator in an object:
+
+<<step2, comment = NA>>=
+
+## Isolate the calibrator NRQ values of the first biological replicate
+
+aa <- nrmData(data = qPCR_run1 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]] 
+
+## Isolate the calibrator NRQ values of the first biological replicate
+
+bb <- nrmData(data = qPCR_run2 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]]
+ 
+## Isolate the calibrator NRQ values of the first biological replicate
+
+cc <- nrmData(data = qPCR_run3 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]]
+ 
+@
+
+Now, we have to run the \code{calData} function. 
+
+
+%-------------------------------------------------------------------------------
+\newpage 
+\section{Calculation of the calibration factors} 
+%-------------------------------------------------------------------------------
+Here, we describe how to use the \code{calData} function. In the continuation of
+ what has been done before, we have three objects containing the NRQ values of
+ the calibrator(s) and we now have to calculate the calibration factors for each
+ gene:
+
+<<step3, comment = NA>>=
+
+## Grouping the calibrator NRQ values of all the biological replicates
+
+d <- rbind(aa, bb, cc) 
+
+## Calibration factor calculation
+
+e <- calData(d) 
+
+e
+
+@
+
+%-------------------------------------------------------------------------------
+\newpage 
+\section{Attenuation of inter-run variations} 
+%-------------------------------------------------------------------------------
+Now, we have the calibration factors, we can calculate the expression value
+ without the obsession of the inter-run variability:
+
+<<step4, eval = FALSE, comment = NA>>=
+
+nrmData(data = qPCR_run1 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)
+
+nrmData(data = qPCR_run2 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)
+
+nrmData(data = qPCR_run3 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)
+
+@
+ 
+{\bf Remark:} The validity of IRCs must be interpreted with care: two or more
+ IRCs must be used to control if the IRCs measure the technical variation
+ between the runs with the same extent the \code{calData} value divided by each
+ calibrator NRQ value must be sensitively equal). If this ratio is really
+ different, you must exclude the highly variable IRC in \textbf{all} the qPCR
+ runs.
+
+%-------------------------------------------------------------------------------
+\newpage 
+\section{Aggregation of multiple independent biological replicates from the same
+ experiment} 
+%-------------------------------------------------------------------------------
+In this section, we will discuss about the final function of this package
+ \code{totData}. In some research fields, the reproducibility of an observation
+ can be tough (notably in the stem cells field). An algorithm published by
+ Willems et al. (2008) \cite{standardization} attenuates the high variations
+ between independent biological replicates which have the same tendency in order
+ to draw relevant statistical conclusions. This algorithm has been inputed in
+ this function for the scientists experiencing this kind of issue. 
+
+<<step5, comment = NA>>=
+
+## Isolate the NRQs scaled to control of the first biological replicate
+
+a1 <- nrmData(data = qPCR_run1 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1] 
+
+## Isolate the NRQs scaled to control of the second biological replicate 
+
+b1 <- nrmData(data = qPCR_run2 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1] 
+
+## Isolate the NRQs scaled to control of the third biological replicate
+
+c1 <- nrmData(data = qPCR_run3 , r=3, E=c(2, 2, 2, 2), 
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
+	   nbRef=2, Refposcol=1:2, nCTL=2, 
+	   CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1]
+
+## Data frame transformation
+
+a2 <- as.data.frame(a1)
+b2 <- as.data.frame(b1)
+c2 <- as.data.frame(c1)
+
+## Aggregation of the three biological replicates
+
+d2 <- rbind(a2, b2, c2)
+
+@
+
+Finally, we use the final function \code{totData} and indicate that we want to
+ use the transformation algorithm published by Willems et al. (2008)
+ \cite{standardization} followed by the linearization process:
+
+<<step6, comment = NA>>=
+
+totData(data=d2, r=3, geo=TRUE, logarithm=TRUE, base=2, 
+	   transformation=TRUE, nSpl=5, linear=TRUE,
+	   na.rm=TRUE)
+
+@
+
+
+%-------------------------------------------------------------------------------
+\newpage 
+\section{RStudio and gWidgets: tools to facilitate your qPCR data analysis} 
+%-------------------------------------------------------------------------------
+To facilitate the use of R, a free software named \emph{RStudio} has been
+ created \cite{RStudio}. This interface allows (among other things) easy data
+ importation/exportation. In the same spirit of having an interface for using R,
+ John Verzani has published a package \code{gWidgets} which has the great
+ advantage to easily create a graphical user interface \cite{gWidgets} for the
+ function you want. In this last section, we will present how we can use these
+ tools to facilitate the qPCR data analysis.
+
+To begin, we must choose our workspace directory by typing this in your R
+ session: \textbf{setwd(gfile(type=\textquotesingle selectdir \textquotesingle)
+ )}. You will see the opening of a window and you will just need to define your
+ workspace directory. Then, we have to import some datasets in our R session.
+ \emph{RStudio} allows an easy data importation (see \ref{fig:dataimport}). 
+\begin{figure}[!h]
+
+  \centering
+  \includegraphics[width=\textwidth]{dataimport.png} 
+  \includegraphics[width=\textwidth]{dataimport2.png}
+  \caption{\it Data importation in RStudio}
+  \label{fig:dataimport}
+\end{figure} 
+
+
+This can be done by following these steps :
+
+\begin{enumerate}
+	\item{uncompress the csv file (qPCR$\_$run1.csv) in the data folder}
+	\item{move it to inst$/$extdata}
+\end{enumerate}
+
+Then, you just need to type this in your R session : 
+
+<<step6bis, eval = TRUE, comment = NA>>=
+
+file <- system.file("extdata", "qPCR_run1.csv", package="EasyqpcR")
+
+qPCR_run1 <- read.table(file, header= TRUE, sep = "", dec = ".")
+
+qPCR_run1
+@
+\newpage
+After data importation, you must control if your qPCR technical replicates
+ satisfy your threshold variation value (0.5 classically):
+
+<<step7, comment = NA>>=
+
+badCt(data=qPCR_run1, r=3, threshold=0.5, na.rm=TRUE)
+
+@
+
+Here, there is no bad replicates, but as an example, we will set the threshold
+ value to 0.2 and see what it returns:
+
+<<step8, comment = NA>>=
+
+badCt(data=qPCR_run1, r=3, threshold=0.2, na.rm=TRUE)
+
+@
+
+There are some bad replicates (according to the example threshold value). Now,
+ we want to easily remove technical error (no more than one in qPCR technical
+ triplicates), we just need to use the \code{gdfnotebook} function of the
+ \code{gWidgets} package by typing this in the R session:
+ \textbf{gdfnotebook(cont= TRUE)}, and then choose which dataset you want to edit
+ (qPCR\_run1, here). After saving it (on an other name in order to easily reproduce
+ your analysis with the same raw data, by example: qPCR\_run1 is the raw dataset,
+ and after removing technical replicates you can save it under the name
+ qPCR\_run1\_cor). Or, you can edit your dataset directly in your spreadsheet and 
+ save it under an other name.
+
+Finally, to easily analyze your qPCR data, you just will need to type this in
+ your R session for each function of the package:
+ \textbf{ggenericwidget(\code{function},cont= TRUE)}, where \code{function} has to
+ be replaced by \code{nrmData}, \code{calData}, \code{totData}, or \code{badCt}. 
+This can also be done with the command lines described above. 
+
+%-------------------------------------------------------------------------------
+\newpage
+\begin{thebibliography}{1}
+
+\bibitem{SLqPCR}
+Kohl, M.
+\newblock{SLqPCR: Functions for analysis of real-time quantitative PCR data at
+ SIRS-Lab GmbH}
+\newblock{R package (2007)} 
+\newblock{SIRS-Lab GmbH, Jena}
+
+\bibitem{qbase}
+Jan Hellemans, Geert Mortier, Anne De Paepe, Frank Speleman and Jo Vandesompele.
+ (2007).
+\newblock qBase relative quantification framework and software for management
+ and automated analysis of real-time quantitative PCR data.
+\newblock Genome Biology 2007, 8:R19 (doi:10.1186/gb-2007-8-2-r19)
+\newblock http://genomebiology.com/2007/8/2/R19
+
+\bibitem{standardization}
+Erik Willems Luc Leyns, Jo Vandesompele. 
+\newblock Standardization of real-time PCR gene expression data from independent
+ biological replicates. 
+\newblock Analytical Biochemistry 379 (2008) 127-129
+ (doi:10.1016/j.ab.2008.04.036). 
+\newblock http://www.sciencedirect.com/science/article/pii/S0003269708002649
+
+\bibitem{RStudio}
+\newblock{RStudio: Integrated development environment for R (Version 0.96.330)
+ [Computer software]. Boston, MA. Retrieved August 6, 2012.}
+\newblock{http://www.rstudio.org/}
+
+ 
+\bibitem{gWidgets}
+John Verzani. Based on the iwidgets code of Simon Urbanek and suggestions by
+ Simon Urbanek and Philippe Grosjean and Michael Lawrence.\newblock{gWidgets:
+ gWidgets API for building toolkit-independent, interactive GUIs}
+\newblock{R package version 0.0-50 (2012)}
+\newblock{http://CRAN.R-project.org/package=gWidgets}
+
+
+
+
+\end{thebibliography}
+%-------------------------------------------------------------------------------
+\end{document}
+
+
