@@ -11,7 +11,7 @@ This function calculates the amplification efficiency from classical qPCR
  fit and the efficiency calculated by E = 10^{-1/slope}. 
 }
 \usage{
-slope(data, q, r, na.rm = F)
+slope(data, q, r, na.rm = FALSE)
 }
 
 \arguments{
