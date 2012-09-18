@@ -3,14 +3,19 @@
 \alias{EasyqpcR}
 \docType{package}
 \title{
-Functions to analyse real-time quantitative PCR data at IRTOMIT-INSERM U1082
+EasyqpcR for low-throughput real-time quantitative PCR data
+        analysis
+
 }
 \description{
-This package contains functions to analyse real-time quantitative PCR data at
- IRTOMIT-INSERM U1082. The algorithm used is the one published by Hellemans et
- al. (2007). It permits the calculation of the normalization and calibration
- factors, the relative quantities, the normalized relative quantities which can
- then be scaled to your control group.
+This package is based on the qBase algorithms published by 
+ Hellemans et al. in 2007. The EasyqpcR package allows you to import easily qPCR
+ data files as described in the vignette. Thereafter, you can calculate 
+ amplification efficiencies, relative quantities and their standard errors, 
+ normalization factors based on the best reference genes choosen (using the 
+ SLqPCR package), and then the normalized relative quantities, the NRQs scaled 
+ to your control and their standard errors. This package has been created for 
+ low-throughput qPCR data analysis.
 }
 \details{
 \tabular{ll}{
