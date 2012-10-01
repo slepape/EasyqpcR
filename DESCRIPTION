@@ -2,7 +2,7 @@ Package: EasyqpcR
 Type: Package
 Title: EasyqpcR for low-throughput real-time quantitative PCR data
         analysis
-Version: 0.99.4
+Version: 1.0.0
 Date: 2012-07-31
 Author: Le Pape Sylvain
 Maintainer: Le Pape Sylvain <sylvain.le.pape@univ-poitiers.fr>
