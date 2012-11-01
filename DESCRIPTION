@@ -3,7 +3,7 @@ Type: Package
 Title: EasyqpcR for low-throughput real-time quantitative PCR data
         analysis
 Version: 1.0.1
-Date: 2012-07-31
+Date: 2012-11-01
 Author: Le Pape Sylvain
 Maintainer: Le Pape Sylvain <sylvain.le.pape@univ-poitiers.fr>
 Description: This package is based on the qBase algorithms published by 
