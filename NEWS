@@ -2,3 +2,6 @@ version 1.0.0
 
   o First version of this package.
 
+version 1.0.1
+
+  o Bug fixed in nrmData function when there is only one reference gene used to normalize qPCR data.
