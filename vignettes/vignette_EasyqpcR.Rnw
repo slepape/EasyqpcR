@@ -584,10 +584,26 @@ u <- rbind(m, n, o, p, q, r, s, t)
 
 @
 
+Explanation of what we have done before : we have isolated the NRQs corrected by its specific CF (thus, the CNRQs):
+
+\begin{itemize}
+	\item{Samples 1 to 4 and IRC 1.1, 2.1, 3.1 are corrected by e}
+    \item{Samples 5 to 8 and IRC 1.2, 2.2, 3.2 are corrected by f} 
+    \item{Samples 9 to 12 and IRC 1.3, 2.3, 3.3 are corrected by g}
+	\item{Samples 13 to 16 and IRC 1.4, 2.4, 3.4 are corrected by h}
+    \item{Samples 17 to 20 and IRC 1.5, 2.5, 3.5 are corrected by i} 
+    \item{Samples 21 to 24 and IRC 1.6, 2.6, 3.6 are corrected by j} 
+	\item{Samples 25 to 28 and IRC 1.7, 2.7, 3.1 are corrected by k}
+    \item{Samples 29 to 32 and IRC 1.8, 2.8, 3.2 are corrected by l} 
+\end{itemize}
+
+Do not worry about nCTL, because in gene maximisation (or sample maximisation if 
+ there are too many samples), the CTL are not present in all the runs, so you 
+ will have to perform the scaling to control after.
 
 Note that in this case where the control samples are not present in all the 
  runs, the nCTL parameter is not relevant and we only take into account the NRQs
- corrected by the calibration factor (we name it CNRQs). Thus, to have nicer 
+ corrected by the calibration factor (CNRQs). Thus, to have nicer 
  graphs, you will need to perform a scaling to your control group by doing a 
  geometrical mean of the CNRQs of your control samples and divide all the CNRQs 
  by this geometric mean. Here the control group is composed by the samples 1 to 
@@ -605,23 +621,6 @@ CNRQs_scaled_to_group <- u/ctlgeom2
 
 
 @
-
-Aggregation of the NRQs, we isolate the NRQs corrected by its specific CF:
-
-\begin{itemize}
-	\item{Samples 1 to 4 and IRC 1.1, 2.1, 3.1 are corrected by e}
-    \item{Samples 5 to 8 and IRC 1.2, 2.2, 3.2 are corrected by f} 
-    \item{Samples 9 to 12 and IRC 1.3, 2.3, 3.3 are corrected by g}
-	\item{Samples 13 to 16 and IRC 1.4, 2.4, 3.4 are corrected by h}
-    \item{Samples 17 to 20 and IRC 1.5, 2.5, 3.5 are corrected by i} 
-    \item{Samples 21 to 24 and IRC 1.6, 2.6, 3.6 are corrected by j} 
-	\item{Samples 25 to 28 and IRC 1.7, 2.7, 3.1 are corrected by k}
-    \item{Samples 29 to 32 and IRC 1.8, 2.8, 3.2 are corrected by l} 
-\end{itemize}
-
-Do not worry about nCTL, because in gene maximisation (or sample maximisation if 
- there are too many samples), the CTL are not present in all the runs, so you 
- will have to perform the scaling to control after.
 
 
 
