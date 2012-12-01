@@ -598,19 +598,13 @@ Note that in this case where the control samples are not present in all the
 ctlgroup <- u[c(1:4,8:11,15:18,22:25),]
 
 ctlgeom <- colProds(ctlgroup)^(1/dim(ctlgroup)[1])
+ctlgeom1 <- (as.data.frame(ctlgeom)[rep(1:(ncol(u)), each = nrow(u)), ])
+ctlgeom2 <- as.data.frame(matrix(ctlgeom1, ncol = ncol(u), byrow = FALSE))
 
-CNRQs_scaled_to_group <- u/ctlgeom
+CNRQs_scaled_to_group <- u/ctlgeom2
 
-yo <- CNRQs_scaled_to_group[c(1:4,8:11,15:18,22:25),]
 
-yoyo <- colProds(yo)^(1/dim(yo)[1])
 @
-
-
-
-
-
-????? Why ctlgeomean is not = 1 ?
 
 Aggregation of the NRQs, we isolate the NRQs corrected by its specific CF:
 
