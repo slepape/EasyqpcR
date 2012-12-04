@@ -9,3 +9,7 @@ version 1.1.1
   o Addition of a new chapter in the vignette.
 
   o Correction of the example of inter-run variation correction.
+
+version 1.1.2
+
+  o Fix the vignette for the scaling to control group.
