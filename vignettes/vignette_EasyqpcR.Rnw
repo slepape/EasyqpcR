@@ -593,8 +593,8 @@ Explanation of what we have done before : we have isolated the NRQs corrected by
 	\item{Samples 13 to 16 and IRC 1.4, 2.4, 3.4 are corrected by h}
     \item{Samples 17 to 20 and IRC 1.5, 2.5, 3.5 are corrected by i} 
     \item{Samples 21 to 24 and IRC 1.6, 2.6, 3.6 are corrected by j} 
-	\item{Samples 25 to 28 and IRC 1.7, 2.7, 3.1 are corrected by k}
-    \item{Samples 29 to 32 and IRC 1.8, 2.8, 3.2 are corrected by l} 
+	\item{Samples 25 to 28 and IRC 1.7, 2.7, 3.7 are corrected by k}
+    \item{Samples 29 to 32 and IRC 1.8, 2.8, 3.8 are corrected by l} 
 \end{itemize}
 
 Do not worry about nCTL, because in gene maximisation (or sample maximisation if 
