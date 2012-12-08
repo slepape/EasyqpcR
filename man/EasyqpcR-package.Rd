@@ -16,7 +16,7 @@ This package contains functions to analyse real-time quantitative PCR data at
 \tabular{ll}{
 Package: \tab EasyqpcR\cr
 Type: \tab Package\cr
-Version: \tab 1.1.2\cr
+Version: \tab 1.1.3\cr
 Date: \tab 2012-11-26\cr
 License: \tab GPL (>=2)\cr
 }
