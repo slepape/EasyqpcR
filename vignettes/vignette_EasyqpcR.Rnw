@@ -286,14 +286,14 @@ To begin, we must choose our workspace directory by typing this in your R
 \end{figure} 
 
 
-This can be done by following these steps :
+This can be done by following these steps:
 
 \begin{enumerate}
 	\item{uncompress the csv file (qPCR$\_$run1.csv) in the data folder}
 	\item{move it to inst$/$extdata}
 \end{enumerate}
 
-Then, you just need to type this in your R session : 
+Then, you just need to type this in your R session: 
 
 <<step8, eval=TRUE, comment=NA>>=
 
@@ -352,7 +352,7 @@ spread across runs ?}
 
 All the previous examples showed how to perform qPCR data analysis when all the
  samples were present for each gene in each run. Here we present the procedure 
- to follow when we have too much samples to be contained in one run, thus when
+ to follow when we have too much samples to be contained in each run, thus when
  samples and genes are spread across different runs.
 
 Here are some examples of plate designs: 
@@ -398,21 +398,23 @@ Here are some examples of plate designs:
 
 As described in the work of Hellemans et al (2007) \cite{qbase}, the sample
  maximisation strategy does not need inter-run calibration factor because there
- is no samples spreading over runs (all the samples for each gene are contained
- in a plate). 
+ is no samples spread over runs (all the samples for each gene are contained
+ in one plate). Unless you have to many samples to be contained in one run even
+ with sample maximisation strategy, you will have to perform the inter-run 
+ variation correction presented below.
 
-Whereas in gene maximisation strategy the samples and genes are spread across
+In gene maximisation strategy the samples and genes are spread across
  runs. Thus, it is necessary to calibrate the NRQs with a run-specific and 
  gene-specific calibration factor.
 
-We will now describe how to handle this last case. Follow these steps :
+We will now describe how to handle this issue. Follow these steps:
 
 \begin{enumerate}
 	\item{uncompress the csv file (Gene$\_$maximisation.csv) in the data folder}
 	\item{move it to inst$/$extdata}
 \end{enumerate}
 
-Then, you just have to do this :
+Then, you just have to do this:
 
 <<step11, eval=TRUE, comment=NA>>=
 
@@ -422,7 +424,7 @@ Gene_maximisation <- read.table(filebis, header=TRUE, sep=";", dec=",")
 
 @
 
-First, you have to analyze if there are some bad replicates :
+First, you have to analyze if there are some bad replicates:
 
 <<step12, eval=TRUE, comment=NA>>=
 
@@ -431,16 +433,16 @@ badCt(data=Gene_maximisation, r=3, threshold=0.5, na.rm=FALSE)[1]
 @
 
 Do not worry about the NTC (no template control), they are not needed in qPCR
- data analysis (but they have to present a Ct difference > 5 Ct compared to the
- samples). Here, you can use the \code{gdfnotebook} function of the 
- \code{gWidgets} package.
+ data analysis (but they have to present at least a Ct difference > 5 Ct 
+ compared to the samples). Here, you can use the \code{gdfnotebook} function of 
+ the \code{gWidgets} package.
 
 
-After having removed the two aberrant values (RG2, Sample 15, Ct = 22.06916 ; 
- and RG3, Sample 18, Ct = 19.02328), rename the data frame as 
+After having removed the two aberrant values (RG2, Sample 15, Ct = 22.0691567571
+ ; and RG3, Sample 18, Ct = 19.0232804823), rename the data frame as 
  Gene$\_$maximisation$\_$cor.
 
-Now, we remove the NTC values :
+Now, we remove the NTC values:
 
 <<step13, eval=FALSE, comment=NA>>=
 
@@ -456,7 +458,7 @@ rownames(Gene_maximisation_cor1) <- c(1:168)
 
 @
 
-Now, we will calculate run-specific calibration factors :
+Now, we will calculate run-specific calibration factors:
 
 <<step14, eval=FALSE, comment=NA>>=
 
@@ -522,16 +524,19 @@ l <- calData(calr8)
 
 To respect the calculation of the NRQs which need the whole samples to take into
  account the whole variability, we have to apply the \code{nrmData} function 
- on the whole samples but we will do it for each run with correction by 
- run-specific calibration factor and each time after inter-run variation 
- correction we isolate the corresponding CNRQs, for example:
+ on the whole samples. But we will do it for each run with the correction by the
+ run-specific calibration factor and after each inter-run variation 
+ correction we isolate the corresponding CNRQs (\italic{i.e.} the NRQs corrected
+ by the specific CF), for example:
 
 We perform inter-run variation correction on the whole samples by the CF of the 
  first run, which corresponds to the samples 1 to 4 and IRC 1.1, 2.1, 3.1. But, 
- the CF of the first is not the correct CF for the second run or any other run.
- Thus, we isolate (after inter-run variation correction on the whole samples by
- the CF of the first run) the samples concerned by this specific CF which are 
- the samples 1 to 4 and IRC 1.1, 2.1, 3.1. And we do it for each run-specific CF.
+ the CF of the first is not the correct CF for the second run and for any other 
+ run. Thus, we isolate (after inter-run variation correction on the whole 
+ samples by the CF of the first run) the samples concerned by this specific CF 
+ which are the samples 1 to 4 and IRC 1.1, 2.1, 3.1. And we do it for each 
+ run-specific CF. Then we isolate the NRQs of the samples 5 to 8 and IRC 1.2, 
+ 2.2, 3.2 corrected by the CF of the second run, etc...
 
 <<step15, eval=FALSE, comment=NA>>=
 
@@ -584,7 +589,9 @@ u <- rbind(m, n, o, p, q, r, s, t)
 
 @
 
-Explanation of what we have done before : we have isolated the NRQs corrected by its specific CF (thus, the CNRQs):
+Explanation of what we have done before: we have isolated the corresponding NRQs 
+ corrected by the specific CF (remember that after correction by the specific CF
+ , we talk in terms of CNRQs and not anymore of NRQs):
 
 \begin{itemize}
 	\item{Samples 1 to 4 and IRC 1.1, 2.1, 3.1 are corrected by e}
@@ -597,15 +604,16 @@ Explanation of what we have done before : we have isolated the NRQs corrected by
     \item{Samples 29 to 32 and IRC 1.8, 2.8, 3.8 are corrected by l} 
 \end{itemize}
 
-Do not worry about nCTL, because in gene maximisation (or sample maximisation if 
- there are too many samples), the CTL are not present in all the runs, so you 
- will have to perform the scaling to control after.
+Do not worry about the \code{nCTL} parameter, because in gene maximisation (or 
+ sample maximisation if there are too many samples), the CTL samples are not 
+ present in all the runs, so you will have to perform the scaling to control 
+ after.
 
 Note that in this case where the control samples are not present in all the 
  runs, the nCTL parameter is not relevant and we only take into account the NRQs
  corrected by the calibration factor (CNRQs). Thus, to have nicer 
  graphs, you will need to perform a scaling to your control group by doing a 
- geometrical mean of the CNRQs of your control samples and divide all the CNRQs 
+ geometric mean of the CNRQs of your control samples and divide all the CNRQs 
  by this geometric mean. Here the control group is composed by the samples 1 to 
  16, thus:
 
