@@ -31,33 +31,33 @@ pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
 %-------------------------------------------------------------------------------
 \title{EasyqpcR: low-throughput real-time quantitative PCR data analysis}
 %-------------------------------------------------------------------------------
-\author{Sylvain Le Pape\\ 
+\author{Sylvain Le Pape\\
 IRTOMIT-INSERM U1082 (Poitiers, France)\medskip\\
 \includegraphics[width=3cm]{logoirtomit.jpg}
 }
 \maketitle
 \tableofcontents
 %-------------------------------------------------------------------------------
-\newpage 
+\newpage
 \section{Introduction}
 %-------------------------------------------------------------------------------
-The package \pkg{EasyqpcR} has been created to facilitate the analysis of 
- real-time quantitative RT-PCR data. This package contains five functions 
- (\code{badCt, nrmData, calData, totData, slope}). In this manuscript, we 
+The package \pkg{EasyqpcR} has been created to facilitate the analysis of
+ real-time quantitative RT-PCR data. This package contains five functions
+ (\code{badCt, nrmData, calData, totData, slope}). In this manuscript, we
  describe and demonstrate how we can use this package. The last section presents
- how we can use the free R GUI \code{RStudio} and the \code{gWidgets} package 
- created by John Verzani in order to facilitate the qPCR data analysis by a 
+ how we can use the free R GUI \code{RStudio} and the \code{gWidgets} package
+ created by John Verzani in order to facilitate the qPCR data analysis by a
  graphical user interface.
 
 %-------------------------------------------------------------------------------
-\newpage 
-\section{Amplification efficiency calculation} 
+\newpage
+\section{Amplification efficiency calculation}
 %-------------------------------------------------------------------------------
-In this section, we describe how we can use the \code{slope} function of this 
- package. As an example, we have 2 genes (gene 1 and gene 2) and 5 samples in 
- triplicates (control group 1 and control group 2, treatment group 1 and 
- treatment group 2, calibrator). We want to calculate the amplification 
- efficiency of these two genes: 
+In this section, we describe how we can use the \code{slope} function of this
+ package. As an example, we have 2 genes (gene 1 and gene 2) and 5 samples in
+ triplicates (control group 1 and control group 2, treatment group 1 and
+ treatment group 2, calibrator). We want to calculate the amplification
+ efficiency of these two genes:
 
 
 <<first, comment=NA>>=
@@ -71,26 +71,26 @@ slope(data=Efficiency_calculation, q=c(1000, 100 ,10, 1, 0.1),
 
 @
 
-You can put the returned values into a vector to use it (without the need to 
+You can put the returned values into a vector to use it (without the need to
  type every amplification efficiency) in the next functions.
 
 <<step1, comment=NA>>=
 
-efficiency <- slope(data=Efficiency_calculation, q=c(1000, 100 ,10, 1, 0.1), 
+efficiency <- slope(data=Efficiency_calculation, q=c(1000, 100 ,10, 1, 0.1),
     r=3, na.rm=TRUE)
 
 @
 %-------------------------------------------------------------------------------
-\newpage 
-\section{Calculation of the expression values from one or multiple qPCR run(s)} 
+\newpage
+\section{Calculation of the expression values from one or multiple qPCR run(s)}
 %-------------------------------------------------------------------------------
-We describe the calculation of the normalization factors, the relative 
- quantities, the normalized relative quantities, and the normalized relative 
- quantities scaled to the control group of your choice using the method of 
- Hellemans et al (2007) \cite{qbase}. We have a set of three qPCR runs, each run 
- representing an independent biological replicate. The raw data of these runs 
+We describe the calculation of the normalization factors, the relative
+ quantities, the normalized relative quantities, and the normalized relative
+ quantities scaled to the control group of your choice using the method of
+ Hellemans et al (2007) \cite{qbase}. We have a set of three qPCR runs, each run
+ representing an independent biological replicate. The raw data of these runs
  can be found in the \code{data} folder of this package. The no template control
- and no amplification control have been discarded in order to facilitate the 
+ and no amplification control have been discarded in order to facilitate the
  understanding of the workflow. The limiting step is that you need to put the
  control samples on the top of the data frame otherwise, the algorithm will not
  work correctly. Firstly, we load the datasets:
@@ -103,9 +103,9 @@ str(c(qPCR_run1,qPCR_run2,qPCR_run3))
 
 Each dataset contains 15 observations: 5 samples (2 control groups, 2 treatment
  groups, 1 calibrator) in triplicates. There are 4 genes: 2 reference genes
- (RG1 and RG2) and 2 target genes (TG and Tgb). 
+ (RG1 and RG2) and 2 target genes (TG and Tgb).
 In order to facilitate the
- understanding of the \code{nrmData} function, I suggest you to read its man 
+ understanding of the \code{nrmData} function, I suggest you to read its man
  page by typing \code{?nrmData} in your R session.
 
 Concerning the reference genes, I suggest you to use the \code{selectHKgenes}
@@ -120,33 +120,33 @@ In order to avoid the inter-run variations, we have used a calibrator (one is
 
 ## Isolate the calibrator NRQ values of the first biological replicate
 
-aa <- nrmData(data=qPCR_run1 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
-       CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]] 
-
-## Isolate the calibrator NRQ values of the first biological replicate
-
-bb <- nrmData(data=qPCR_run2 , r=3, E=c(2, 2, 2, 2), 
-	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-	   nbRef=2, Refposcol=1:2, nCTL=2, 
-	   CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]]
- 
-## Isolate the calibrator NRQ values of the first biological replicate
-
-cc <- nrmData(data=qPCR_run3 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
+aa <- nrmData(data=qPCR_run1 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
        CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]]
- 
+
+## Isolate the calibrator NRQ values of the first biological replicate
+
+bb <- nrmData(data=qPCR_run2 , r=3, E=c(2, 2, 2, 2),
+	   Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+	   nbRef=2, Refposcol=1:2, nCTL=2,
+	   CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]]
+
+## Isolate the calibrator NRQ values of the first biological replicate
+
+cc <- nrmData(data=qPCR_run3 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
+       CF=c(1, 1, 1, 1), CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[[3]]
+
 @
 
-Now, we have to run the \code{calData} function. 
+Now, we have to run the \code{calData} function.
 
 
 %-------------------------------------------------------------------------------
-\newpage 
-\section{Calculation of the calibration factors} 
+\newpage
+\section{Calculation of the calibration factors}
 %-------------------------------------------------------------------------------
 Here, we describe how to use the \code{calData} function. In the continuation of
  what has been done before, we have three objects containing the NRQ values of
@@ -157,7 +157,7 @@ Here, we describe how to use the \code{calData} function. In the continuation of
 
 ## Calibration factor calculation
 
-e <- calData(aa) 
+e <- calData(aa)
 
 f <- calData(bb)
 
@@ -166,31 +166,31 @@ g <- calData(cc)
 @
 
 %-------------------------------------------------------------------------------
-\newpage 
-\section{Attenuation of inter-run variations} 
+\newpage
+\section{Attenuation of inter-run variations}
 %-------------------------------------------------------------------------------
 Now, we have the calibration factors, we can calculate the expression value
  without the obsession of the inter-run variability:
 
 <<step5, eval=FALSE, comment=NA>>=
 
-nrmData(data=qPCR_run1 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
+nrmData(data=qPCR_run1 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
        CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)
 
-nrmData(data=qPCR_run2 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
+nrmData(data=qPCR_run2 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
        CF=f, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)
 
-nrmData(data=qPCR_run3 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
+nrmData(data=qPCR_run3 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
        CF=g, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)
 
 @
- 
+
 {\bf Remark:} The validity of IRCs must be interpreted with care: two or more
  IRCs must be used to control if the IRCs measure the technical variation
  between the runs with the same extent the \code{calData} value divided by each
@@ -199,9 +199,9 @@ nrmData(data=qPCR_run3 , r=3, E=c(2, 2, 2, 2),
  runs.
 
 %-------------------------------------------------------------------------------
-\newpage 
+\newpage
 \section{Aggregation of multiple independent biological replicates from the same
- experiment} 
+ experiment}
 %-------------------------------------------------------------------------------
 In this section, we will discuss about the final function of this package
  \code{totData}. In some research fields, the reproducibility of an observation
@@ -209,29 +209,29 @@ In this section, we will discuss about the final function of this package
  Willems et al. (2008) \cite{standardization} attenuates the high variations
  between independent biological replicates which have the same tendency in order
  to draw relevant statistical conclusions. This algorithm has been inputed in
- this function for the scientists experiencing this kind of issue. 
+ this function for the scientists experiencing this kind of issue.
 
 <<step6, comment=NA>>=
 
 ## Isolate the NRQs scaled to control of the first biological replicate
 
-a1 <- nrmData(data=qPCR_run1 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
-       CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1] 
+a1 <- nrmData(data=qPCR_run1 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
+       CF=e, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1]
 
-## Isolate the NRQs scaled to control of the second biological replicate 
+## Isolate the NRQs scaled to control of the second biological replicate
 
-b1 <- nrmData(data=qPCR_run2 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
-       CF=f, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1] 
+b1 <- nrmData(data=qPCR_run2 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
+       CF=f, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1]
 
 ## Isolate the NRQs scaled to control of the third biological replicate
 
-c1 <- nrmData(data=qPCR_run3 , r=3, E=c(2, 2, 2, 2), 
-       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5, 
-       nbRef=2, Refposcol=1:2, nCTL=2, 
+c1 <- nrmData(data=qPCR_run3 , r=3, E=c(2, 2, 2, 2),
+       Eerror=c(0.02, 0.02, 0.02, 0.02), nSpl=5,
+       nbRef=2, Refposcol=1:2, nCTL=2,
        CF=g, CalPos=5, trace=FALSE, geo=TRUE, na.rm=TRUE)[1]
 
 ## Data frame transformation
@@ -252,7 +252,7 @@ Finally, we use the final function \code{totData} and indicate that we want to
 
 <<step7, comment=NA>>=
 
-totData(data=d2, r=3, geo=TRUE, logarithm=TRUE, base=2, 
+totData(data=d2, r=3, geo=TRUE, logarithm=TRUE, base=2,
        transformation=TRUE, nSpl=5, linear=TRUE,
        na.rm=TRUE)
 
@@ -260,8 +260,8 @@ totData(data=d2, r=3, geo=TRUE, logarithm=TRUE, base=2,
 
 
 %-------------------------------------------------------------------------------
-\newpage 
-\section{RStudio and gWidgets: tools to facilitate your qPCR data analysis} 
+\newpage
+\section{RStudio and gWidgets: tools to facilitate your qPCR data analysis}
 %-------------------------------------------------------------------------------
 To facilitate the use of R, a free software named \emph{RStudio} has been
  created \cite{RStudio}. This interface allows (among other things) easy data
@@ -275,15 +275,15 @@ To begin, we must choose our workspace directory by typing this in your R
  session: \textbf{setwd(gfile(type=\textquotesingle selectdir \textquotesingle)
  )}. You will see the opening of a window and you will just need to define your
  workspace directory. Then, we have to import some datasets in our R session.
- \emph{RStudio} allows an easy data importation (see \ref{fig:dataimport}). 
+ \emph{RStudio} allows an easy data importation (see \ref{fig:dataimport}).
 \begin{figure}[!h]
 
   \centering
-  \includegraphics[width=\textwidth]{dataimport.png} 
+  \includegraphics[width=\textwidth]{dataimport.png}
   \includegraphics[width=\textwidth]{dataimport2.png}
   \caption{\it Data importation in RStudio}
   \label{fig:dataimport}
-\end{figure} 
+\end{figure}
 
 
 This can be done by following these steps:
@@ -293,7 +293,7 @@ This can be done by following these steps:
 	\item{move it to inst$/$extdata}
 \end{enumerate}
 
-Then, you just need to type this in your R session: 
+Then, you just need to type this in your R session:
 
 <<step8, eval=TRUE, comment=NA>>=
 
@@ -330,14 +330,14 @@ There are some bad replicates (according to the example threshold value). Now,
  (qPCR\_run1, here). After saving it (on an other name in order to easily reproduce
  your analysis with the same raw data, by example: qPCR\_run1 is the raw dataset,
  and after removing technical replicates you can save it under the name
- qPCR\_run1\_cor). Or, you can edit your dataset directly in your spreadsheet and 
+ qPCR\_run1\_cor). Or, you can edit your dataset directly in your spreadsheet and
  save it under an other name.
 
 Finally, to easily analyze your qPCR data, you just will need to type this in
  your R session for each function of the package:
  \textbf{ggenericwidget(\code{function},cont=TRUE)}, where \code{function} has to
- be replaced by \code{nrmData}, \code{calData}, \code{totData}, or \code{badCt}. 
-This can also be done with the command lines described above. 
+ be replaced by \code{nrmData}, \code{calData}, \code{totData}, or \code{badCt}.
+This can also be done with the command lines described above.
 
 
 
@@ -345,66 +345,66 @@ This can also be done with the command lines described above.
 
 
 %-------------------------------------------------------------------------------
-\newpage 
-\section{How to analyse qPCR data with EasyqpcR when samples and genes are 
-spread across runs ?} 
+\newpage
+\section{How to analyse qPCR data with EasyqpcR when samples and genes are
+spread across runs ?}
 %-------------------------------------------------------------------------------
 
 All the previous examples showed how to perform qPCR data analysis when all the
- samples were present for each gene in each run. Here we present the procedure 
+ samples were present for each gene in each run. Here we present the procedure
  to follow when we have too much samples to be contained in each run, thus when
  samples and genes are spread across different runs.
 
-Here are some examples of plate designs: 
+Here are some examples of plate designs:
 
 \begin{figure}[!h]
 
   \centering
-  \includegraphics[width=\textwidth]{Sample_max.png} 
+  \includegraphics[width=\textwidth]{Sample_max.png}
   \caption{\it Sample maximisation strategy}
   \label{fig:samplemax}
-\end{figure} 
+\end{figure}
 
 \newpage
 
 \begin{figure}[!h]
 
-  \centering  
+  \centering
   \includegraphics[width=\textwidth]{Gene_max.jpg}
   \caption{\it Gene maximisation strategy 1$/$3}
   \label{fig:genemax1}
-\end{figure} 
+\end{figure}
 
 \newpage
 
 \begin{figure}[!h]
 
-  \centering  
+  \centering
   \includegraphics[width=\textwidth]{Gene_max2.jpg}
   \caption{\it Gene maximisation strategy 2$/$3}
   \label{fig:genemax2}
-\end{figure} 
+\end{figure}
 
 \newpage
 
 \begin{figure}[!h]
 
-  \centering  
+  \centering
   \includegraphics[width=\textwidth]{Gene_max3.jpg}
   \caption{\it Gene maximisation strategy 3$/$3}
   \label{fig:genemax3}
-\end{figure} 
+\end{figure}
 
 
 As described in the work of Hellemans et al (2007) \cite{qbase}, the sample
  maximisation strategy does not need inter-run calibration factor because there
  is no samples spread over runs (all the samples for each gene are contained
  in one plate). Unless you have to many samples to be contained in one run even
- with sample maximisation strategy, you will have to perform the inter-run 
+ with sample maximisation strategy, you will have to perform the inter-run
  variation correction presented below.
 
 In gene maximisation strategy the samples and genes are spread across
- runs. Thus, it is necessary to calibrate the NRQs with a run-specific and 
+ runs. Thus, it is necessary to calibrate the NRQs with a run-specific and
  gene-specific calibration factor.
 
 We will now describe how to handle this issue. Follow these steps:
@@ -433,20 +433,20 @@ badCt(data=Gene_maximisation, r=3, threshold=0.5, na.rm=FALSE)[1]
 @
 
 Do not worry about the NTC (no template control), they are not needed in qPCR
- data analysis (but they have to present at least a Ct difference > 5 Ct 
- compared to the samples). Here, you can use the \code{gdfnotebook} function of 
+ data analysis (but they have to present at least a Ct difference > 5 Ct
+ compared to the samples). Here, you can use the \code{gdfnotebook} function of
  the \code{gWidgets} package.
 
 
 After having removed the two aberrant values (RG2, Sample 15, Ct = 22.0691567571
- ; and RG3, Sample 18, Ct = 19.0232804823), rename the data frame as 
+ ; and RG3, Sample 18, Ct = 19.0232804823), rename the data frame as
  Gene$\_$maximisation$\_$cor.
 
 Now, we remove the NTC values:
 
 <<step13, eval=FALSE, comment=NA>>=
 
-fileter <- system.file("extdata", "Gene_maximisation_cor.csv", 
+fileter <- system.file("extdata", "Gene_maximisation_cor.csv",
     package="EasyqpcR")
 
 Gene_maximisation_cor <- read.table(fileter, header=TRUE, sep=";", dec=",")
@@ -462,45 +462,45 @@ Now, we will calculate run-specific calibration factors:
 
 <<step14, eval=FALSE, comment=NA>>=
 
-calr1 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, 
-    nCTL=16, CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
+calr1 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2,
+    nCTL=16, CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[3]][1:3,]
 
-calr2 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
-    na.rm = TRUE)[[3]][4:6,] 
+calr2 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
+    na.rm = TRUE)[[3]][4:6,]
 
-calr3 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
-    na.rm = TRUE)[[3]][7:9,] 
+calr3 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
+    na.rm = TRUE)[[3]][7:9,]
 
-calr4 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, 
-    nCTL=16, CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
+calr4 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2,
+    nCTL=16, CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[3]][10:12,]
 
-calr5 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
-    na.rm = TRUE)[[3]][13:15,] 
+calr5 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
+    na.rm = TRUE)[[3]][13:15,]
 
-calr6 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
+calr6 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[3]][16:18,]
 
-calr7 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, 
-    nCTL=16, CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
+calr7 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2,
+    nCTL=16, CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[3]][19:21,]
 
-calr8 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE, 
-    na.rm = TRUE)[[3]][22:24,] 
+calr8 <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=c(1, 1, 1), CalPos=c(33:56), trace = FALSE, geo = TRUE,
+    na.rm = TRUE)[[3]][22:24,]
 
 
 e <- calData(calr1)
@@ -523,64 +523,64 @@ l <- calData(calr8)
 @
 
 To respect the calculation of the NRQs which need the whole samples to take into
- account the whole variability, we have to apply the \code{nrmData} function 
+ account the whole variability, we have to apply the \code{nrmData} function
  on the whole samples. But we will do it for each run with the correction by the
- run-specific calibration factor and after each inter-run variation 
+ run-specific calibration factor and after each inter-run variation
  correction we isolate the corresponding CNRQs (\emph{i.e.} the NRQs corrected
  by the specific CF), for example:
 
-We perform inter-run variation correction on the whole samples by the CF of the 
- first run, which corresponds to the samples 1 to 4 and IRC 1.1, 2.1, 3.1. But, 
- the CF of the first is not the correct CF for the second run and for any other 
- run. Thus, we isolate (after inter-run variation correction on the whole 
- samples by the CF of the first run) the samples concerned by this specific CF 
- which are the samples 1 to 4 and IRC 1.1, 2.1, 3.1. And we do it for each 
- run-specific CF. Then we isolate the NRQs of the samples 5 to 8 and IRC 1.2, 
+We perform inter-run variation correction on the whole samples by the CF of the
+ first run, which corresponds to the samples 1 to 4 and IRC 1.1, 2.1, 3.1. But,
+ the CF of the first is not the correct CF for the second run and for any other
+ run. Thus, we isolate (after inter-run variation correction on the whole
+ samples by the CF of the first run) the samples concerned by this specific CF
+ which are the samples 1 to 4 and IRC 1.1, 2.1, 3.1. And we do it for each
+ run-specific CF. Then we isolate the NRQs of the samples 5 to 8 and IRC 1.2,
  2.2, 3.2 corrected by the CF of the second run, etc...
 
 <<step15, eval=FALSE, comment=NA>>=
 
-m <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=e, CalPos=c(33:35), trace = FALSE, geo = TRUE, 
+m <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=e, CalPos=c(33:35), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(1:4,33:35),]
 
 
-n <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=f, CalPos=c(36:56), trace = FALSE, geo = TRUE, 
+n <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=f, CalPos=c(36:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(5:8,36:38),]
 
-o <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=g, CalPos=c(36:56), trace = FALSE, geo = TRUE, 
+o <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=g, CalPos=c(36:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(9:12,39:41),]
 
-p <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=h, CalPos=c(33:35), trace = FALSE, geo = TRUE, 
+p <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=h, CalPos=c(33:35), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(13:16,42:44),]
 
 
-q <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=i, CalPos=c(36:56), trace = FALSE, geo = TRUE, 
+q <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=i, CalPos=c(36:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(17:20,45:47),]
 
-r <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=j, CalPos=c(36:56), trace = FALSE, geo = TRUE, 
+r <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=j, CalPos=c(36:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(21:24,48:50),]
 
-s <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=k, CalPos=c(33:35), trace = FALSE, geo = TRUE, 
+s <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=k, CalPos=c(33:35), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(25:28,51:53),]
 
 
-t <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2), 
-    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16, 
-    CF=l, CalPos=c(36:56), trace = FALSE, geo = TRUE, 
+t <- nrmData(data = Gene_maximisation_cor1, r=3, E=c(2, 2, 2),
+    Eerror=c(0.02, 0.02, 0.02), nSpl=56, nbRef=2, Refposcol=1:2, nCTL=16,
+    CF=l, CalPos=c(36:56), trace = FALSE, geo = TRUE,
     na.rm = TRUE)[[2]][c(29:32,54:56),]
 
 ## Aggregation of all the CNRQs
@@ -589,32 +589,32 @@ u <- rbind(m, n, o, p, q, r, s, t)
 
 @
 
-Explanation of what we have done before: we have isolated the corresponding NRQs 
+Explanation of what we have done before: we have isolated the corresponding NRQs
  corrected by the specific CF (remember that after correction by the specific CF
  , we talk in terms of CNRQs and not anymore of NRQs):
 
 \begin{itemize}
 	\item{Samples 1 to 4 and IRC 1.1, 2.1, 3.1 are corrected by e}
-    \item{Samples 5 to 8 and IRC 1.2, 2.2, 3.2 are corrected by f} 
+    \item{Samples 5 to 8 and IRC 1.2, 2.2, 3.2 are corrected by f}
     \item{Samples 9 to 12 and IRC 1.3, 2.3, 3.3 are corrected by g}
 	\item{Samples 13 to 16 and IRC 1.4, 2.4, 3.4 are corrected by h}
-    \item{Samples 17 to 20 and IRC 1.5, 2.5, 3.5 are corrected by i} 
-    \item{Samples 21 to 24 and IRC 1.6, 2.6, 3.6 are corrected by j} 
+    \item{Samples 17 to 20 and IRC 1.5, 2.5, 3.5 are corrected by i}
+    \item{Samples 21 to 24 and IRC 1.6, 2.6, 3.6 are corrected by j}
 	\item{Samples 25 to 28 and IRC 1.7, 2.7, 3.7 are corrected by k}
-    \item{Samples 29 to 32 and IRC 1.8, 2.8, 3.8 are corrected by l} 
+    \item{Samples 29 to 32 and IRC 1.8, 2.8, 3.8 are corrected by l}
 \end{itemize}
 
-Do not worry about the \code{nCTL} parameter, because in gene maximisation (or 
- sample maximisation if there are too many samples), the CTL samples are not 
- present in all the runs, so you will have to perform the scaling to control 
+Do not worry about the \code{nCTL} parameter, because in gene maximisation (or
+ sample maximisation if there are too many samples), the CTL samples are not
+ present in all the runs, so you will have to perform the scaling to control
  after.
 
-Note that in this case where the control samples are not present in all the 
+Note that in this case where the control samples are not present in all the
  runs, the nCTL parameter is not relevant and we only take into account the NRQs
- corrected by the calibration factor (CNRQs). Thus, to have nicer 
- graphs, you will need to perform a scaling to your control group by doing a 
- geometric mean of the CNRQs of your control samples and divide all the CNRQs 
- by this geometric mean. Here the control group is composed by the samples 1 to 
+ corrected by the calibration factor (CNRQs). Thus, to have nicer
+ graphs, you will need to perform a scaling to your control group by doing a
+ geometric mean of the CNRQs of your control samples and divide all the CNRQs
+ by this geometric mean. Here the control group is composed by the samples 1 to
  16, thus:
 
 <<step16, eval=FALSE, comment=NA>>=
@@ -640,7 +640,7 @@ CNRQs_scaled_to_group <- u/ctlgeom2
 Kohl, M.
 \newblock{SLqPCR: Functions for analysis of real-time quantitative PCR data at
  SIRS-Lab GmbH}
-\newblock{R package (2007)} 
+\newblock{R package (2007)}
 \newblock{SIRS-Lab GmbH, Jena}
 
 \bibitem{qbase}
@@ -652,11 +652,11 @@ Jan Hellemans, Geert Mortier, Anne De Paepe, Frank Speleman and Jo Vandesompele.
 \newblock http://genomebiology.com/2007/8/2/R19
 
 \bibitem{standardization}
-Erik Willems Luc Leyns, Jo Vandesompele. 
+Erik Willems Luc Leyns, Jo Vandesompele.
 \newblock Standardization of real-time PCR gene expression data from independent
- biological replicates. 
+ biological replicates.
 \newblock Analytical Biochemistry 379 (2008) 127-129
- (doi:10.1016/j.ab.2008.04.036). 
+ (doi:10.1016/j.ab.2008.04.036).
 \newblock http://www.sciencedirect.com/science/article/pii/S0003269708002649
 
 \bibitem{RStudio}
@@ -664,7 +664,7 @@ Erik Willems Luc Leyns, Jo Vandesompele.
  [Computer software]. Boston, MA. Retrieved August 6, 2012.}
 \newblock{http://www.rstudio.org/}
 
- 
+
 \bibitem{gWidgets}
 John Verzani. Based on the iwidgets code of Simon Urbanek and suggestions by
  Simon Urbanek and Philippe Grosjean and Michael Lawrence.\newblock{gWidgets:
@@ -678,5 +678,3 @@ John Verzani. Based on the iwidgets code of Simon Urbanek and suggestions by
 \end{thebibliography}
 %-------------------------------------------------------------------------------
 \end{document}
-
-
