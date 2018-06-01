@@ -19,4 +19,3 @@ Suggests: SLqPCR, qpcrNorm, qpcR, knitr
 biocViews: qPCR, GeneExpression
 License: GPL (>=2)
 Packaged: 2013-11-28 07:48:55 UTC; sysy-nana
-PackageStatus: Deprecated
